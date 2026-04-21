@@ -6,6 +6,7 @@ use crate::JknClient;
 use crate::client::{JknResponse, RequestOptions, normalize_path};
 use crate::config::ServiceType;
 use crate::error::Result;
+use crate::models::antrean::{AntreanFktpRefDokterResponse, AntreanFktpRefPoliResponse};
 
 #[derive(Clone)]
 pub struct AntreanFktp {
@@ -24,6 +25,10 @@ impl AntreanFktp {
                 RequestOptions::get(format!("/ref/poli/tanggal/{tanggal}")),
             )
             .await
+    }
+
+    pub async fn ref_poli_typed(&self, tanggal: &str) -> Result<AntreanFktpRefPoliResponse> {
+        self.ref_poli(tanggal).await?.into_response()
     }
 
     pub async fn ref_dokter(&self, tanggal: &str, kode_poli: &str) -> Result<JknResponse> {
@@ -64,5 +69,13 @@ impl AntreanFktp {
                 RequestOptions::post("/antrean/batal").data(data)?,
             )
             .await
+    }
+
+    pub async fn ref_dokter_typed(
+        &self,
+        tanggal: &str,
+        kode_poli: &str,
+    ) -> Result<AntreanFktpRefDokterResponse> {
+        self.ref_dokter(tanggal, kode_poli).await?.into_response()
     }
 }

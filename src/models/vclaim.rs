@@ -527,3 +527,178 @@ pub struct VclaimRandomQuestionFaskesItem {
 pub struct VclaimRandomQuestionResponse {
     pub faskes: Vec<VclaimRandomQuestionFaskesItem>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringKunjunganItem {
+    pub diagnosa: String,
+    #[serde(rename = "jnsPelayanan")]
+    pub jns_pelayanan: String,
+    #[serde(rename = "kelasRawat")]
+    pub kelas_rawat: String,
+    pub nama: String,
+    #[serde(rename = "noKartu")]
+    pub no_kartu: String,
+    #[serde(rename = "noSep")]
+    pub no_sep: String,
+    #[serde(rename = "noRujukan")]
+    pub no_rujukan: String,
+    pub poli: Option<String>,
+    #[serde(rename = "tglPlgSep")]
+    pub tgl_plg_sep: String,
+    #[serde(rename = "tglSep")]
+    pub tgl_sep: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringKunjunganResponse {
+    pub sep: Vec<VclaimMonitoringKunjunganItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringKlaimItem {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringKlaimResponse {
+    pub klaim: Vec<VclaimMonitoringKlaimItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringHistoriItem {
+    pub diagnosa: String,
+    #[serde(rename = "jnsPelayanan")]
+    pub jns_pelayanan: String,
+    #[serde(rename = "kelasRawat")]
+    pub kelas_rawat: String,
+    #[serde(rename = "namaPeserta")]
+    pub nama_peserta: String,
+    #[serde(rename = "noKartu")]
+    pub no_kartu: String,
+    #[serde(rename = "noSep")]
+    pub no_sep: String,
+    #[serde(rename = "noRujukan")]
+    pub no_rujukan: String,
+    pub poli: String,
+    #[serde(rename = "ppkPelayanan")]
+    pub ppk_pelayanan: String,
+    #[serde(rename = "tglPlgSep")]
+    pub tgl_plg_sep: String,
+    #[serde(rename = "tglSep")]
+    pub tgl_sep: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringHistoriResponse {
+    pub histori: Vec<VclaimMonitoringHistoriItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringJasaRaharjaItem {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimMonitoringJasaRaharjaResponse {
+    pub jaminan: Vec<VclaimMonitoringJasaRaharjaItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimLpkDataResponse {
+    pub lpk: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimPrbCariByNomorResponse {
+    pub prb: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimPrbCariByTanggalResponse {
+    pub prb: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimPrbRekapPotensiItem {
+    #[serde(rename = "NamaPeserta")]
+    pub nama_peserta: String,
+    #[serde(rename = "NomorKartu")]
+    pub nomor_kartu: String,
+    #[serde(rename = "NOSEP")]
+    pub nosep: String,
+    #[serde(rename = "TanggalPelayanan")]
+    pub tanggal_pelayanan: String,
+    #[serde(rename = "DiagnosaPotensiPRB")]
+    pub diagnosa_potensi_prb: String,
+    #[serde(rename = "KategoriPenyakitPRB")]
+    pub kategori_penyakit_prb: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimPrbRekapPotensiResponse {
+    pub list: Vec<VclaimPrbRekapPotensiItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolWriteResponse {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolSepResponse {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolCariResponse {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolListItem {
+    #[serde(flatten)]
+    pub extra: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolListResponse {
+    pub list: Vec<VclaimRencanaKontrolListItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolPoliItem {
+    #[serde(rename = "kodePoli")]
+    pub kode_poli: String,
+    #[serde(rename = "namaPoli")]
+    pub nama_poli: String,
+    pub kapasitas: String,
+    #[serde(rename = "jmlRencanaKontroldanRujukan")]
+    pub jml_rencana_kontroldan_rujukan: String,
+    pub persentase: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolPoliResponse {
+    pub list: Vec<VclaimRencanaKontrolPoliItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolDokterItem {
+    #[serde(rename = "kodeDokter")]
+    pub kode_dokter: String,
+    #[serde(rename = "namaDokter")]
+    pub nama_dokter: String,
+    #[serde(rename = "jadwalPraktek")]
+    pub jadwal_praktek: String,
+    pub kapasitas: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VclaimRencanaKontrolDokterResponse {
+    pub list: Vec<VclaimRencanaKontrolDokterItem>,
+}

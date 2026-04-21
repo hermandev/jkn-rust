@@ -11,8 +11,14 @@ use crate::models::vclaim::{
     ReferensiDiagnosaResponse, ReferensiDpjpResponse, ReferensiFaskesResponse, ReferensiList,
     ReferensiPoliResponse, VclaimFingerPrintPesertaListResponse, VclaimFingerPrintStatusResponse,
     VclaimInacbgResponse, VclaimIndukKecelakaanResponse, VclaimInternalSepListResponse,
-    VclaimJumlahSepResponse, VclaimPersetujuanSepListResponse, VclaimPesertaResponse,
-    VclaimRandomQuestionResponse, VclaimRujukanKeluarDetail, VclaimRujukanKeluarListResponse,
+    VclaimJumlahSepResponse, VclaimLpkDataResponse, VclaimMonitoringHistoriResponse,
+    VclaimMonitoringJasaRaharjaResponse, VclaimMonitoringKlaimResponse,
+    VclaimMonitoringKunjunganResponse, VclaimPersetujuanSepListResponse, VclaimPesertaResponse,
+    VclaimPrbCariByNomorResponse, VclaimPrbCariByTanggalResponse, VclaimPrbRekapPotensiResponse,
+    VclaimRandomQuestionResponse, VclaimRencanaKontrolCariResponse,
+    VclaimRencanaKontrolDokterResponse, VclaimRencanaKontrolListResponse,
+    VclaimRencanaKontrolPoliResponse, VclaimRencanaKontrolSepResponse,
+    VclaimRencanaKontrolWriteResponse, VclaimRujukanKeluarDetail, VclaimRujukanKeluarListResponse,
     VclaimRujukanKhususListResponse, VclaimRujukanListResponse, VclaimRujukanResponse,
     VclaimRujukanSaranaListResponse, VclaimRujukanSpesialistikListResponse, VclaimSepDetail,
     VclaimSepWriteSimpleResponse, VclaimSuplesiJasaRaharjaResponse,
@@ -394,6 +400,14 @@ impl Monitoring {
             .await
     }
 
+    pub async fn kunjungan_typed(
+        &self,
+        tanggal: &str,
+        jenis: u32,
+    ) -> Result<VclaimMonitoringKunjunganResponse> {
+        self.kunjungan(tanggal, jenis).await?.into_response()
+    }
+
     pub async fn klaim(&self, tanggal: &str, jenis: u32, status: u32) -> Result<JknResponse> {
         self.client
             .send(
@@ -403,6 +417,15 @@ impl Monitoring {
                 )),
             )
             .await
+    }
+
+    pub async fn klaim_typed(
+        &self,
+        tanggal: &str,
+        jenis: u32,
+        status: u32,
+    ) -> Result<VclaimMonitoringKlaimResponse> {
+        self.klaim(tanggal, jenis, status).await?.into_response()
     }
 
     pub async fn riwayat_pelayanan(
@@ -424,6 +447,17 @@ impl Monitoring {
             .await
     }
 
+    pub async fn riwayat_pelayanan_typed(
+        &self,
+        nomor_kartu: &str,
+        awal: &str,
+        akhir: &str,
+    ) -> Result<VclaimMonitoringHistoriResponse> {
+        self.riwayat_pelayanan(nomor_kartu, awal, akhir)
+            .await?
+            .into_response()
+    }
+
     pub async fn klaim_jasa_raharja(
         &self,
         jenis: u32,
@@ -438,6 +472,17 @@ impl Monitoring {
                 )),
             )
             .await
+    }
+
+    pub async fn klaim_jasa_raharja_typed(
+        &self,
+        jenis: u32,
+        awal: &str,
+        akhir: &str,
+    ) -> Result<VclaimMonitoringJasaRaharjaResponse> {
+        self.klaim_jasa_raharja(jenis, awal, akhir)
+            .await?
+            .into_response()
     }
 }
 
@@ -460,6 +505,13 @@ impl Lpk {
             .await
     }
 
+    pub async fn insert_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert(data).await?.into_response()
+    }
+
     pub async fn update<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -467,6 +519,13 @@ impl Lpk {
                 RequestOptions::put("/LPK/update").data(wrap_t_lpk(data))?,
             )
             .await
+    }
+
+    pub async fn update_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.update(data).await?.into_response()
     }
 
     pub async fn delete(&self, nomor_sep: &str) -> Result<JknResponse> {
@@ -486,6 +545,10 @@ impl Lpk {
                 RequestOptions::get(format!("/LPK/TglMasuk/{tanggal}/JnsPelayanan/{jenis}")),
             )
             .await
+    }
+
+    pub async fn data_typed(&self, tanggal: &str, jenis: u32) -> Result<VclaimLpkDataResponse> {
+        self.data(tanggal, jenis).await?.into_response()
     }
 }
 
@@ -508,6 +571,13 @@ impl Prb {
             .await
     }
 
+    pub async fn insert_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert(data).await?.into_response()
+    }
+
     pub async fn update<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -515,6 +585,13 @@ impl Prb {
                 RequestOptions::put("/PRB/Update").data(wrap_t_prb(data))?,
             )
             .await
+    }
+
+    pub async fn update_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.update(data).await?.into_response()
     }
 
     pub async fn delete<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -539,6 +616,16 @@ impl Prb {
             .await
     }
 
+    pub async fn cari_by_nomor_typed(
+        &self,
+        nomor_srb: &str,
+        nomor_sep: &str,
+    ) -> Result<VclaimPrbCariByNomorResponse> {
+        self.cari_by_nomor(nomor_srb, nomor_sep)
+            .await?
+            .into_response()
+    }
+
     pub async fn cari_by_tanggal(&self, awal: &str, akhir: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/prb/tglMulai/:awal/tglAkhir/:akhir",
@@ -552,6 +639,14 @@ impl Prb {
             .await
     }
 
+    pub async fn cari_by_tanggal_typed(
+        &self,
+        awal: &str,
+        akhir: &str,
+    ) -> Result<VclaimPrbCariByTanggalResponse> {
+        self.cari_by_tanggal(awal, akhir).await?.into_response()
+    }
+
     pub async fn rekap_potensi(&self, tahun: u32, bulan: u32) -> Result<JknResponse> {
         let path = normalize_path(
             "/prbpotensi/tahun/:tahun/bulan/:bulan",
@@ -563,6 +658,14 @@ impl Prb {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn rekap_potensi_typed(
+        &self,
+        tahun: u32,
+        bulan: u32,
+    ) -> Result<VclaimPrbRekapPotensiResponse> {
+        self.rekap_potensi(tahun, bulan).await?.into_response()
     }
 }
 
@@ -612,6 +715,13 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn insert_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.insert(data).await?.into_response()
+    }
+
     pub async fn insert_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -620,6 +730,13 @@ impl RencanaKontrol {
                     .data(json!({ "request": data }))?,
             )
             .await
+    }
+
+    pub async fn insert_v2_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.insert_v2(data).await?.into_response()
     }
 
     pub async fn update<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -631,6 +748,13 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn update_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.update(data).await?.into_response()
+    }
+
     pub async fn update_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -639,6 +763,13 @@ impl RencanaKontrol {
                     .data(json!({ "request": data }))?,
             )
             .await
+    }
+
+    pub async fn update_v2_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.update_v2(data).await?.into_response()
     }
 
     pub async fn delete(&self, no_surat_kontrol: &str, user: &str) -> Result<JknResponse> {
@@ -661,6 +792,13 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn insert_spri_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.insert_spri(data).await?.into_response()
+    }
+
     pub async fn update_spri<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -669,6 +807,13 @@ impl RencanaKontrol {
                     .data(json!({ "request": data }))?,
             )
             .await
+    }
+
+    pub async fn update_spri_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimRencanaKontrolWriteResponse> {
+        self.update_spri(data).await?.into_response()
     }
 
     pub async fn sep(&self, nomor: &str) -> Result<JknResponse> {
@@ -681,6 +826,10 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn sep_typed(&self, nomor: &str) -> Result<VclaimRencanaKontrolSepResponse> {
+        self.sep(nomor).await?.into_response()
+    }
+
     pub async fn cari(&self, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/RencanaKontrol/noSuratKontrol/:nomor",
@@ -689,6 +838,10 @@ impl RencanaKontrol {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn cari_typed(&self, nomor: &str) -> Result<VclaimRencanaKontrolCariResponse> {
+        self.cari(nomor).await?.into_response()
     }
 
     pub async fn data_by_noka(
@@ -712,6 +865,18 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn data_by_noka_typed(
+        &self,
+        bulan: u32,
+        tahun: u32,
+        nomor_kartu: &str,
+        filter: u32,
+    ) -> Result<VclaimRencanaKontrolListResponse> {
+        self.data_by_noka(bulan, tahun, nomor_kartu, filter)
+            .await?
+            .into_response()
+    }
+
     pub async fn data_by_tanggal(
         &self,
         awal: &str,
@@ -731,6 +896,17 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn data_by_tanggal_typed(
+        &self,
+        awal: &str,
+        akhir: &str,
+        filter: u32,
+    ) -> Result<VclaimRencanaKontrolListResponse> {
+        self.data_by_tanggal(awal, akhir, filter)
+            .await?
+            .into_response()
+    }
+
     pub async fn poli(&self, jenis: u32, nomor: &str, tanggal: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/RencanaKontrol/ListSpesialistik/JnsKontrol/:jenis/nomor/:nomor/TglRencanaKontrol/:tanggal",
@@ -745,6 +921,15 @@ impl RencanaKontrol {
             .await
     }
 
+    pub async fn poli_typed(
+        &self,
+        jenis: u32,
+        nomor: &str,
+        tanggal: &str,
+    ) -> Result<VclaimRencanaKontrolPoliResponse> {
+        self.poli(jenis, nomor, tanggal).await?.into_response()
+    }
+
     pub async fn dokter(&self, jenis: u32, kode_poli: &str, tanggal: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/RencanaKontrol/JadwalPraktekDokter/JnsKontrol/:jenis/KdPoli/:kodePoli/TglRencanaKontrol/:tanggal",
@@ -757,6 +942,17 @@ impl RencanaKontrol {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn dokter_typed(
+        &self,
+        jenis: u32,
+        kode_poli: &str,
+        tanggal: &str,
+    ) -> Result<VclaimRencanaKontrolDokterResponse> {
+        self.dokter(jenis, kode_poli, tanggal)
+            .await?
+            .into_response()
     }
 }
 

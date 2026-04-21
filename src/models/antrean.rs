@@ -127,3 +127,21 @@ pub struct AntreanDetail {
     #[serde(flatten)]
     pub extra: serde_json::Map<String, serde_json::Value>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct AntreanFktpRefPoliResponse {
+    pub list: Vec<AntreanRefPoliItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct AntreanFktpRefDokterItem {
+    pub namadokter: String,
+    pub kodedokter: u32,
+    pub jampraktek: String,
+    pub kapasitas: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct AntreanFktpRefDokterResponse {
+    pub list: Vec<AntreanFktpRefDokterItem>,
+}
