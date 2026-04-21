@@ -6,6 +6,12 @@ use crate::JknClient;
 use crate::client::{JknResponse, RequestOptions, normalize_path};
 use crate::config::ServiceType;
 use crate::error::Result;
+use crate::models::pcare::{
+    PcareAlergiItem, PcareDiagnosaItem, PcareDokterItem, PcareFaskesRujukanSubSpesialisItem,
+    PcareKesadaranItem, PcareKhususItem, PcareListResponse, PcarePesertaData, PcarePoliItem,
+    PcarePrognosaItem, PcareProviderItem, PcareRiwayatKunjunganItem, PcareRujukanResult,
+    PcareSaranaItem, PcareSpesialisItem, PcareStatusPulangItem, PcareSubSpesialisItem,
+};
 
 #[derive(Clone)]
 pub struct PCare {
@@ -55,6 +61,10 @@ impl Referensi {
             .await
     }
 
+    pub async fn alergi_typed(&self, kode: &str) -> Result<PcareListResponse<PcareAlergiItem>> {
+        self.alergi(kode).await?.into_response()
+    }
+
     pub async fn diagnosa(&self, kode: &str, row: u32, limit: u32) -> Result<JknResponse> {
         let path = normalize_path(
             "/diagnosa/:kode/:row/:limit",
@@ -67,6 +77,15 @@ impl Referensi {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn diagnosa_typed(
+        &self,
+        kode: &str,
+        row: u32,
+        limit: u32,
+    ) -> Result<PcareListResponse<PcareDiagnosaItem>> {
+        self.diagnosa(kode, row, limit).await?.into_response()
     }
 
     pub async fn dokter(&self, row: u32, limit: u32) -> Result<JknResponse> {
@@ -82,10 +101,22 @@ impl Referensi {
             .await
     }
 
+    pub async fn dokter_typed(
+        &self,
+        row: u32,
+        limit: u32,
+    ) -> Result<PcareListResponse<PcareDokterItem>> {
+        self.dokter(row, limit).await?.into_response()
+    }
+
     pub async fn kesadaran(&self) -> Result<JknResponse> {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get("/kesadaran"))
             .await
+    }
+
+    pub async fn kesadaran_typed(&self) -> Result<PcareListResponse<PcareKesadaranItem>> {
+        self.kesadaran().await?.into_response()
     }
 
     pub async fn poli(&self, row: u32, limit: u32) -> Result<JknResponse> {
@@ -101,10 +132,22 @@ impl Referensi {
             .await
     }
 
+    pub async fn poli_typed(
+        &self,
+        row: u32,
+        limit: u32,
+    ) -> Result<PcareListResponse<PcarePoliItem>> {
+        self.poli(row, limit).await?.into_response()
+    }
+
     pub async fn prognosa(&self) -> Result<JknResponse> {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get("/prognosa"))
             .await
+    }
+
+    pub async fn prognosa_typed(&self) -> Result<PcareListResponse<PcarePrognosaItem>> {
+        self.prognosa().await?.into_response()
     }
 
     pub async fn status_pulang(&self, ranap: bool) -> Result<JknResponse> {
@@ -114,6 +157,13 @@ impl Referensi {
                 RequestOptions::get(format!("/statuspulang/rawatInap/{ranap}")),
             )
             .await
+    }
+
+    pub async fn status_pulang_typed(
+        &self,
+        ranap: bool,
+    ) -> Result<PcareListResponse<PcareStatusPulangItem>> {
+        self.status_pulang(ranap).await?.into_response()
     }
 
     pub async fn provider(&self, row: u32, limit: u32) -> Result<JknResponse> {
@@ -127,6 +177,14 @@ impl Referensi {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn provider_typed(
+        &self,
+        row: u32,
+        limit: u32,
+    ) -> Result<PcareListResponse<PcareProviderItem>> {
+        self.provider(row, limit).await?.into_response()
     }
 }
 
@@ -147,6 +205,10 @@ impl Peserta {
             .await
     }
 
+    pub async fn nomor_kartu_typed(&self, nomor: &str) -> Result<PcarePesertaData> {
+        self.nomor_kartu(nomor).await?.into_response()
+    }
+
     pub async fn jenis_kartu(&self, jenis: &str, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/peserta/:jenis/:nomor",
@@ -158,6 +220,10 @@ impl Peserta {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn jenis_kartu_typed(&self, jenis: &str, nomor: &str) -> Result<PcarePesertaData> {
+        self.jenis_kartu(jenis, nomor).await?.into_response()
     }
 }
 
@@ -181,6 +247,10 @@ impl Kunjungan {
             .await
     }
 
+    pub async fn rujukan_typed(&self, nomor: &str) -> Result<PcareRujukanResult> {
+        self.rujukan(nomor).await?.into_response()
+    }
+
     pub async fn riwayat(&self, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/kunjungan/peserta/:nomor",
@@ -189,6 +259,13 @@ impl Kunjungan {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn riwayat_typed(
+        &self,
+        nomor: &str,
+    ) -> Result<PcareListResponse<PcareRiwayatKunjunganItem>> {
+        self.riwayat(nomor).await?.into_response()
     }
 
     pub async fn insert<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -233,6 +310,10 @@ impl Spesialis {
             .await
     }
 
+    pub async fn get_typed(&self) -> Result<PcareListResponse<PcareSpesialisItem>> {
+        self.get().await?.into_response()
+    }
+
     pub async fn sub(&self, kode: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/spesialis/:kode/subspesialis",
@@ -243,16 +324,28 @@ impl Spesialis {
             .await
     }
 
+    pub async fn sub_typed(&self, kode: &str) -> Result<PcareListResponse<PcareSubSpesialisItem>> {
+        self.sub(kode).await?.into_response()
+    }
+
     pub async fn sarana(&self) -> Result<JknResponse> {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get("/spesialis/sarana"))
             .await
     }
 
+    pub async fn sarana_typed(&self) -> Result<PcareListResponse<PcareSaranaItem>> {
+        self.sarana().await?.into_response()
+    }
+
     pub async fn khusus(&self) -> Result<JknResponse> {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get("/spesialis/khusus"))
             .await
+    }
+
+    pub async fn khusus_typed(&self) -> Result<PcareListResponse<PcareKhususItem>> {
+        self.khusus().await?.into_response()
     }
 
     pub async fn faskes_rujukan_sub_spesialis(
@@ -272,5 +365,16 @@ impl Spesialis {
         self.client
             .send(ServiceType::Pcare, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn faskes_rujukan_sub_spesialis_typed(
+        &self,
+        kode_sub: &str,
+        kode_sarana: &str,
+        tanggal: &str,
+    ) -> Result<PcareListResponse<PcareFaskesRujukanSubSpesialisItem>> {
+        self.faskes_rujukan_sub_spesialis(kode_sub, kode_sarana, tanggal)
+            .await?
+            .into_response()
     }
 }
