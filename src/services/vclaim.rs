@@ -9,7 +9,14 @@ use crate::config::ServiceType;
 use crate::error::{JknError, Result};
 use crate::models::vclaim::{
     ReferensiDiagnosaResponse, ReferensiDpjpResponse, ReferensiFaskesResponse, ReferensiList,
-    ReferensiPoliResponse, VclaimPesertaResponse,
+    ReferensiPoliResponse, VclaimFingerPrintPesertaListResponse, VclaimFingerPrintStatusResponse,
+    VclaimInacbgResponse, VclaimIndukKecelakaanResponse, VclaimInternalSepListResponse,
+    VclaimJumlahSepResponse, VclaimPersetujuanSepListResponse, VclaimPesertaResponse,
+    VclaimRandomQuestionResponse, VclaimRujukanKeluarDetail, VclaimRujukanKeluarListResponse,
+    VclaimRujukanKhususListResponse, VclaimRujukanListResponse, VclaimRujukanResponse,
+    VclaimRujukanSaranaListResponse, VclaimRujukanSpesialistikListResponse, VclaimSepDetail,
+    VclaimSepWriteSimpleResponse, VclaimSuplesiJasaRaharjaResponse,
+    VclaimTanggalPulangListResponse,
 };
 
 #[derive(Clone)]
@@ -786,6 +793,14 @@ impl Rujukan {
             .await
     }
 
+    pub async fn cari_by_nomor_typed(
+        &self,
+        nomor: &str,
+        sumber: u32,
+    ) -> Result<VclaimRujukanResponse> {
+        self.cari_by_nomor(nomor, sumber).await?.into_response()
+    }
+
     pub async fn cari_by_noka(&self, nomor: &str, sumber: u32) -> Result<JknResponse> {
         self.validate_sumber(sumber)?;
         let path = if sumber == 1 {
@@ -797,6 +812,14 @@ impl Rujukan {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn cari_by_noka_typed(
+        &self,
+        nomor: &str,
+        sumber: u32,
+    ) -> Result<VclaimRujukanResponse> {
+        self.cari_by_noka(nomor, sumber).await?.into_response()
     }
 
     pub async fn cari_by_noka_multi(&self, nomor: &str, sumber: u32) -> Result<JknResponse> {
@@ -812,6 +835,16 @@ impl Rujukan {
             .await
     }
 
+    pub async fn cari_by_noka_multi_typed(
+        &self,
+        nomor: &str,
+        sumber: u32,
+    ) -> Result<VclaimRujukanListResponse> {
+        self.cari_by_noka_multi(nomor, sumber)
+            .await?
+            .into_response()
+    }
+
     pub async fn insert<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -819,6 +852,13 @@ impl Rujukan {
                 RequestOptions::post("/Rujukan/insert").data(wrap_t_rujukan(data))?,
             )
             .await
+    }
+
+    pub async fn insert_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert(data).await?.into_response()
     }
 
     pub async fn update<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -872,6 +912,14 @@ impl Rujukan {
             .await
     }
 
+    pub async fn list_khusus_typed(
+        &self,
+        bulan: u32,
+        tahun: u32,
+    ) -> Result<VclaimRujukanKhususListResponse> {
+        self.list_khusus(bulan, tahun).await?.into_response()
+    }
+
     pub async fn insert_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -879,6 +927,13 @@ impl Rujukan {
                 RequestOptions::post("/Rujukan/2.0/insert").data(wrap_t_rujukan(data))?,
             )
             .await
+    }
+
+    pub async fn insert_v2_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert_v2(data).await?.into_response()
     }
 
     pub async fn update_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -903,6 +958,16 @@ impl Rujukan {
             .await
     }
 
+    pub async fn list_spesialistik_typed(
+        &self,
+        kode_ppk: &str,
+        tanggal: &str,
+    ) -> Result<VclaimRujukanSpesialistikListResponse> {
+        self.list_spesialistik(kode_ppk, tanggal)
+            .await?
+            .into_response()
+    }
+
     pub async fn list_sarana(&self, kode_ppk: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/Rujukan/ListSarana/PPKRujukan/:kodePpk",
@@ -911,6 +976,13 @@ impl Rujukan {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn list_sarana_typed(
+        &self,
+        kode_ppk: &str,
+    ) -> Result<VclaimRujukanSaranaListResponse> {
+        self.list_sarana(kode_ppk).await?.into_response()
     }
 
     pub async fn list_keluar(&self, awal: &str, akhir: &str) -> Result<JknResponse> {
@@ -924,6 +996,14 @@ impl Rujukan {
             .await
     }
 
+    pub async fn list_keluar_typed(
+        &self,
+        awal: &str,
+        akhir: &str,
+    ) -> Result<VclaimRujukanKeluarListResponse> {
+        self.list_keluar(awal, akhir).await?.into_response()
+    }
+
     pub async fn keluar_by_nomor(&self, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/Rujukan/Keluar/:nomor",
@@ -932,6 +1012,10 @@ impl Rujukan {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn keluar_by_nomor_typed(&self, nomor: &str) -> Result<VclaimRujukanKeluarDetail> {
+        self.keluar_by_nomor(nomor).await?.into_response()
     }
 
     pub async fn jumlah_sep(&self, jenis: u32, nomor: &str) -> Result<JknResponse> {
@@ -945,6 +1029,14 @@ impl Rujukan {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn jumlah_sep_typed(
+        &self,
+        jenis: u32,
+        nomor: &str,
+    ) -> Result<VclaimJumlahSepResponse> {
+        self.jumlah_sep(jenis, nomor).await?.into_response()
     }
 }
 
@@ -965,6 +1057,13 @@ impl Sep {
                 RequestOptions::post("/SEP/1.1/insert").data(wrap_t_sep(data))?,
             )
             .await
+    }
+
+    pub async fn insert_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert(data).await?.into_response()
     }
 
     pub async fn update<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -992,6 +1091,10 @@ impl Sep {
             .await
     }
 
+    pub async fn cari_typed(&self, nomor: &str) -> Result<VclaimSepDetail> {
+        self.cari(nomor).await?.into_response()
+    }
+
     pub async fn cari_by_rujukan(&self, nomor_rujukan: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/Rujukan/lastsep/norujukan/:nomorRujukan",
@@ -1002,6 +1105,10 @@ impl Sep {
             .await
     }
 
+    pub async fn cari_by_rujukan_typed(&self, nomor_rujukan: &str) -> Result<VclaimSepDetail> {
+        self.cari_by_rujukan(nomor_rujukan).await?.into_response()
+    }
+
     pub async fn insert_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -1009,6 +1116,13 @@ impl Sep {
                 RequestOptions::post("/SEP/2.0/insert").data(wrap_t_sep(data))?,
             )
             .await
+    }
+
+    pub async fn insert_v2_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.insert_v2(data).await?.into_response()
     }
 
     pub async fn update_v2<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -1048,6 +1162,16 @@ impl Sep {
             .await
     }
 
+    pub async fn suplesi_jasa_raharja_typed(
+        &self,
+        nomor_kartu: &str,
+        tanggal_pelayanan: &str,
+    ) -> Result<VclaimSuplesiJasaRaharjaResponse> {
+        self.suplesi_jasa_raharja(nomor_kartu, tanggal_pelayanan)
+            .await?
+            .into_response()
+    }
+
     pub async fn data_induk_kecelakaan(&self, nomor_kartu: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/sep/KllInduk/List/:nomorKartu",
@@ -1056,6 +1180,15 @@ impl Sep {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn data_induk_kecelakaan_typed(
+        &self,
+        nomor_kartu: &str,
+    ) -> Result<VclaimIndukKecelakaanResponse> {
+        self.data_induk_kecelakaan(nomor_kartu)
+            .await?
+            .into_response()
     }
 
     pub async fn pengajuan<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -1067,6 +1200,13 @@ impl Sep {
             .await
     }
 
+    pub async fn pengajuan_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.pengajuan(data).await?.into_response()
+    }
+
     pub async fn approval_pengajuan<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         self.client
             .send(
@@ -1074,6 +1214,13 @@ impl Sep {
                 RequestOptions::post("/Sep/aprovalSEP").data(wrap_t_sep(data))?,
             )
             .await
+    }
+
+    pub async fn approval_pengajuan_typed<T: Serialize>(
+        &self,
+        data: T,
+    ) -> Result<VclaimSepWriteSimpleResponse> {
+        self.approval_pengajuan(data).await?.into_response()
     }
 
     pub async fn list_persetujuan(&self, bulan: u32, tahun: u32) -> Result<JknResponse> {
@@ -1086,6 +1233,14 @@ impl Sep {
                 )),
             )
             .await
+    }
+
+    pub async fn list_persetujuan_typed(
+        &self,
+        bulan: u32,
+        tahun: u32,
+    ) -> Result<VclaimPersetujuanSepListResponse> {
+        self.list_persetujuan(bulan, tahun).await?.into_response()
     }
 
     pub async fn update_tanggal_pulang<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -1125,6 +1280,17 @@ impl Sep {
             .await
     }
 
+    pub async fn list_tanggal_pulang_typed(
+        &self,
+        bulan: u32,
+        tahun: u32,
+        filter: Option<&str>,
+    ) -> Result<VclaimTanggalPulangListResponse> {
+        self.list_tanggal_pulang(bulan, tahun, filter)
+            .await?
+            .into_response()
+    }
+
     pub async fn inacbg(&self, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path("/sep/cbg/:nomor", &[("nomor", Some(nomor.to_string()))])?;
         self.client
@@ -1135,6 +1301,10 @@ impl Sep {
             .await
     }
 
+    pub async fn inacbg_typed(&self, nomor: &str) -> Result<VclaimInacbgResponse> {
+        self.inacbg(nomor).await?.into_response()
+    }
+
     pub async fn list_internal(&self, nomor: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/SEP/Internal/:nomor",
@@ -1143,6 +1313,10 @@ impl Sep {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn list_internal_typed(&self, nomor: &str) -> Result<VclaimInternalSepListResponse> {
+        self.list_internal(nomor).await?.into_response()
     }
 
     pub async fn delete_internal<T: Serialize>(&self, data: T) -> Result<JknResponse> {
@@ -1167,6 +1341,16 @@ impl Sep {
             .await
     }
 
+    pub async fn finger_print_typed(
+        &self,
+        nomor_kartu: &str,
+        tanggal: &str,
+    ) -> Result<VclaimFingerPrintStatusResponse> {
+        self.finger_print(nomor_kartu, tanggal)
+            .await?
+            .into_response()
+    }
+
     pub async fn list_finger_print(&self, tanggal: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/SEP/FingerPrint/List/Peserta/TglPelayanan/:tanggal",
@@ -1175,6 +1359,13 @@ impl Sep {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn list_finger_print_typed(
+        &self,
+        tanggal: &str,
+    ) -> Result<VclaimFingerPrintPesertaListResponse> {
+        self.list_finger_print(tanggal).await?.into_response()
     }
 
     pub async fn list_random_questions(
@@ -1192,6 +1383,16 @@ impl Sep {
         self.client
             .send(ServiceType::Vclaim, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn list_random_questions_typed(
+        &self,
+        nomor_kartu: &str,
+        tanggal: &str,
+    ) -> Result<VclaimRandomQuestionResponse> {
+        self.list_random_questions(nomor_kartu, tanggal)
+            .await?
+            .into_response()
     }
 
     pub async fn send_random_question_answers<T: Serialize>(&self, data: T) -> Result<JknResponse> {
