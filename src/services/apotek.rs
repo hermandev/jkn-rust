@@ -6,6 +6,12 @@ use crate::JknClient;
 use crate::client::{JknResponse, RequestOptions, normalize_path};
 use crate::config::ServiceType;
 use crate::error::Result;
+use crate::models::apotek::{
+    ApotekDaftarResepResponse, ApotekDphoResponse, ApotekFaskesResponse, ApotekMonitoringResponse,
+    ApotekObatReferensiResponse, ApotekPelayananDaftarResponse, ApotekPoliResponse,
+    ApotekPrbRekapPesertaResponse, ApotekResepSimpanResponse, ApotekRiwayatResponse,
+    ApotekSepKunjunganResponse, ApotekSettingResponse, ApotekSpesialistikResponse,
+};
 
 #[derive(Clone)]
 pub struct Apotek {
@@ -62,6 +68,10 @@ impl Referensi {
             .await
     }
 
+    pub async fn dpho_typed(&self) -> Result<ApotekDphoResponse> {
+        self.dpho().await?.into_response()
+    }
+
     pub async fn poli(&self, keyword: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/referensi/poli/:keyword",
@@ -70,6 +80,10 @@ impl Referensi {
         self.client
             .send(ServiceType::Apotek, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn poli_typed(&self, keyword: &str) -> Result<ApotekPoliResponse> {
+        self.poli(keyword).await?.into_response()
     }
 
     pub async fn faskes(&self, jenis: u32, nama: &str) -> Result<JknResponse> {
@@ -85,6 +99,10 @@ impl Referensi {
             .await
     }
 
+    pub async fn faskes_typed(&self, jenis: u32, nama: &str) -> Result<ApotekFaskesResponse> {
+        self.faskes(jenis, nama).await?.into_response()
+    }
+
     pub async fn setting_apotek(&self, kode_apotek: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/referensi/settingppk/read/:kodeApotek",
@@ -95,6 +113,10 @@ impl Referensi {
             .await
     }
 
+    pub async fn setting_apotek_typed(&self, kode_apotek: &str) -> Result<ApotekSettingResponse> {
+        self.setting_apotek(kode_apotek).await?.into_response()
+    }
+
     pub async fn spesialistik(&self) -> Result<JknResponse> {
         self.client
             .send(
@@ -102,6 +124,10 @@ impl Referensi {
                 RequestOptions::get("/referensi/spesialistik"),
             )
             .await
+    }
+
+    pub async fn spesialistik_typed(&self) -> Result<ApotekSpesialistikResponse> {
+        self.spesialistik().await?.into_response()
     }
 
     pub async fn obat(
@@ -121,6 +147,15 @@ impl Referensi {
         self.client
             .send(ServiceType::Apotek, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn obat_typed(
+        &self,
+        jenis: &str,
+        tanggal: &str,
+        filter: Option<&str>,
+    ) -> Result<ApotekObatReferensiResponse> {
+        self.obat(jenis, tanggal, filter).await?.into_response()
     }
 }
 
@@ -181,6 +216,10 @@ impl Resep {
             .await
     }
 
+    pub async fn simpan_typed<T: Serialize>(&self, data: T) -> Result<ApotekResepSimpanResponse> {
+        self.simpan(data).await?.into_response()
+    }
+
     pub async fn hapus<T: Serialize>(&self, data: T) -> Result<JknResponse> {
         let request = RequestOptions::delete("/hapusresep")
             .skip_content_type_hack()
@@ -196,6 +235,10 @@ impl Resep {
                 RequestOptions::post("/daftarresep").data(data)?,
             )
             .await
+    }
+
+    pub async fn daftar_typed<T: Serialize>(&self, data: T) -> Result<ApotekDaftarResepResponse> {
+        self.daftar(data).await?.into_response()
     }
 }
 
@@ -227,6 +270,10 @@ impl PelayananObat {
             .await
     }
 
+    pub async fn daftar_typed(&self, nomor_sep: &str) -> Result<ApotekPelayananDaftarResponse> {
+        self.daftar(nomor_sep).await?.into_response()
+    }
+
     pub async fn riwayat(&self, awal: &str, akhir: &str, nomor_kartu: &str) -> Result<JknResponse> {
         let path = normalize_path(
             "/riwayatobat/:awal/:akhir/:nomorKartu",
@@ -239,6 +286,17 @@ impl PelayananObat {
         self.client
             .send(ServiceType::Apotek, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn riwayat_typed(
+        &self,
+        awal: &str,
+        akhir: &str,
+        nomor_kartu: &str,
+    ) -> Result<ApotekRiwayatResponse> {
+        self.riwayat(awal, akhir, nomor_kartu)
+            .await?
+            .into_response()
     }
 }
 
@@ -260,6 +318,10 @@ impl Sep {
         self.client
             .send(ServiceType::Apotek, RequestOptions::get(path))
             .await
+    }
+
+    pub async fn kunjungan_typed(&self, nomor_sep: &str) -> Result<ApotekSepKunjunganResponse> {
+        self.kunjungan(nomor_sep).await?.into_response()
     }
 }
 
@@ -289,6 +351,18 @@ impl Monitoring {
             )
             .await
     }
+
+    pub async fn data_klaim_typed(
+        &self,
+        bulan: u32,
+        tahun: u32,
+        jenis_obat: u32,
+        status: u32,
+    ) -> Result<ApotekMonitoringResponse> {
+        self.data_klaim(bulan, tahun, jenis_obat, status)
+            .await?
+            .into_response()
+    }
 }
 
 #[derive(Clone)]
@@ -308,5 +382,13 @@ impl Prb {
                 RequestOptions::get(format!("/Prb/rekappeserta/tahun/{tahun}/bulan/{bulan}")),
             )
             .await
+    }
+
+    pub async fn rekap_peserta_typed(
+        &self,
+        tahun: u32,
+        bulan: u32,
+    ) -> Result<ApotekPrbRekapPesertaResponse> {
+        self.rekap_peserta(tahun, bulan).await?.into_response()
     }
 }
