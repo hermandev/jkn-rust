@@ -2,6 +2,9 @@
 name = "jkn_rust"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "Client Rust untuk bridging API BPJS/JKN"
+authors = ["hermantolakoro@gmail.com"]
 
 [dependencies]
 anyhow = "1.0.102"
