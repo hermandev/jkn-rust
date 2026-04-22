@@ -33,7 +33,7 @@ Crate akan membaca `.env` melalui `dotenv`.
 Lihat `.env.example`:
 
 ```env
-NODE_ENV=development
+JKN_MODE=development
 JKN_PPK_CODE=
 JKN_CONS_ID=
 JKN_CONS_SECRET=
@@ -104,7 +104,4 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-## Catatan
 
-- Payload request umumnya menerima `impl Serialize`, jadi Anda bisa memakai struct sendiri.
-- Jika ingin type request/response bawaan per endpoint, itu masih bisa dilanjutkan sebagai tahap berikutnya.
