@@ -1,4 +1,4 @@
-# jkn_rust
+# JKN
 
 Client Rust untuk bridging API BPJS/JKN.
 
@@ -106,6 +106,5 @@ async fn main() -> anyhow::Result<()> {
 
 ## Catatan
 
-- Method Rust mengikuti surface TypeScript, tetapi memakai naming snake_case.
 - Payload request umumnya menerima `impl Serialize`, jadi Anda bisa memakai struct sendiri.
 - Jika ingin type request/response bawaan per endpoint, itu masih bisa dilanjutkan sebagai tahap berikutnya.
