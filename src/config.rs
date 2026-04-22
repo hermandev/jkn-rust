@@ -13,7 +13,7 @@ pub enum Mode {
 
 impl Mode {
     pub fn from_env() -> Self {
-        match env::var("NODE_ENV").ok().as_deref() {
+        match env::var("JKN_MODE").ok().as_deref() {
             Some("production") => Self::Production,
             _ => Self::Development,
         }
