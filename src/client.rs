@@ -198,16 +198,15 @@ impl JknClient {
         if !options.skip_decrypt
             && parsed.response != Value::Null
             && parsed.response != Value::String(String::new())
+            && let Some(encrypted) = parsed.response.as_str()
         {
-            if let Some(encrypted) = parsed.response.as_str() {
-                let decrypted = decrypt_response_payload(
-                    encrypted,
-                    &self.config().cons_id,
-                    &self.config().cons_secret,
-                    &signed.timestamp,
-                )?;
-                parsed.response = serde_json::from_str(&decrypted)?;
-            }
+            let decrypted = decrypt_response_payload(
+                encrypted,
+                &self.config().cons_id,
+                &self.config().cons_secret,
+                &signed.timestamp,
+            )?;
+            parsed.response = serde_json::from_str(&decrypted)?;
         }
 
         Ok(parsed)
