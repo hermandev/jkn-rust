@@ -1,10 +1,11 @@
-# JKN
+[![Crates.io](https://img.shields.io/crates/v/jkn_rust)](https://crates.io/crates/jkn_rust)
+[![Documentation](https://docs.rs/jkn_rust/badge.svg)](https://docs.rs/jkn_rust)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Client Rust untuk bridging API BPJS/JKN.
+# JKN Client Rust untuk bridging API BPJS/JKN
 
-## Status
 
-Service yang sudah dipetakan ke crate ini:
+## Status Service
 
 - `vclaim`
 - `pcare`
@@ -15,13 +16,12 @@ Service yang sudah dipetakan ke crate ini:
 - `rekam_medis`
 - `aplicares`
 
-Paritas yang sudah dikejar saat ini adalah surface endpoint dan perilaku request utama. Banyak request/response masih generik `serde_json::Value`, lalu bisa di-convert ke type Anda sendiri.
 
 ## Instalasi
 
 ```toml
 [dependencies]
-jkn_rust = { path = "../jkn_rust" }
+jkn_rust = "*"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
