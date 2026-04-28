@@ -387,3 +387,35 @@ pub struct PcareRiwayatKunjunganItem {
     #[serde(rename = "tglPulang")]
     pub tgl_pulang: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PcareTKPItem {
+    #[serde(rename = "kdTkp")]
+    pub kd_tkp: String,
+    #[serde(rename = "nmTkp")]
+    pub nm_tkp: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PcarePendaftaranResult {
+    #[serde(rename = "noUrut")]
+    pub no_urut: String,
+    pub tgldaftar: String,
+    #[serde(rename = "providerPelayanan")]
+    pub provider_pelayanan: PcareProviderItem,
+    pub peserta: PcarePesertaData,
+    pub poli: PcarePoliItem,
+    pub keluhan: String,
+    pub status: String,
+    pub sistole: i64,
+    pub diastole: i64,
+    #[serde(rename = "beratBadan")]
+    pub berat_badan: i64,
+    #[serde(rename = "tinggiBadan")]
+    pub tinggi_badan: i64,
+    #[serde(rename = "respRate")]
+    pub resp_rate: i64,
+    #[serde(rename = "heartRate")]
+    pub heart_rate: i64,
+    pub tkp: PcareTKPItem,
+}

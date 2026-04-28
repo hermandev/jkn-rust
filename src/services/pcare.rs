@@ -12,6 +12,7 @@ use crate::models::pcare::{
     PcarePrognosaItem, PcareProviderItem, PcareRiwayatKunjunganItem, PcareRujukanResult,
     PcareSaranaItem, PcareSpesialisItem, PcareStatusPulangItem, PcareSubSpesialisItem,
 };
+use crate::pcare::PcarePendaftaranResult;
 
 #[derive(Clone)]
 pub struct PCare {
@@ -33,6 +34,10 @@ impl PCare {
 
     pub fn kunjungan(&self) -> Kunjungan {
         Kunjungan::new(Arc::clone(&self.client))
+    }
+
+    pub fn pendadtaran(&self) -> Pendaftaran {
+        Pendaftaran::new(Arc::clone(&self.client))
     }
 
     pub fn spesialis(&self) -> Spesialis {
@@ -376,5 +381,88 @@ impl Spesialis {
         self.faskes_rujukan_sub_spesialis(kode_sub, kode_sarana, tanggal)
             .await?
             .into_response()
+    }
+}
+
+#[derive(Clone)]
+pub struct Pendaftaran {
+    client: Arc<JknClient>,
+}
+
+impl Pendaftaran {
+    fn new(client: Arc<JknClient>) -> Self {
+        Self { client }
+    }
+
+    pub async fn get(&self, nomor: &str, tanggal: &str) -> Result<JknResponse> {
+        let path = normalize_path(
+            "/pendaftaran/nourut/:nomor/tgldaftar/:tanggal",
+            &[
+                ("nomor", Some(nomor.to_string())),
+                ("tanggal", Some(tanggal.to_string())),
+            ],
+        )?;
+        self.client
+            .send(ServiceType::Pcare, RequestOptions::get(path))
+            .await
+    }
+
+    pub async fn get_typed(&self, nomor: &str, tanggal: &str) -> Result<PcarePendaftaranResult> {
+        self.get(nomor, tanggal).await?.into_response()
+    }
+
+    pub async fn insert<T: Serialize>(&self, data: T) -> Result<JknResponse> {
+        self.client
+            .send(
+                ServiceType::Pcare,
+                RequestOptions::post("/pendaftaran").data(data)?,
+            )
+            .await
+    }
+
+    pub async fn get_provider(&self, tanggal: &str, row: &str, limit: &str) -> Result<JknResponse> {
+        let path = normalize_path(
+            "/pendaftaran/tgldaftar/:tanggal/:row/:limit",
+            &[
+                ("tanggal", Some(tanggal.to_string())),
+                ("row", Some(row.to_string())),
+                ("limit", Some(limit.to_string())),
+            ],
+        )?;
+        self.client
+            .send(ServiceType::Pcare, RequestOptions::get(path))
+            .await
+    }
+
+    pub async fn get_provider_typed(
+        &self,
+        tanggal: &str,
+        row: &str,
+        limit: &str,
+    ) -> Result<PcareListResponse<PcarePendaftaranResult>> {
+        self.get_provider(tanggal, row, limit)
+            .await?
+            .into_response()
+    }
+
+    pub async fn delete(
+        &self,
+        noka: &str,
+        tanggal: &str,
+        nomor: &str,
+        poli: &str,
+    ) -> Result<JknResponse> {
+        let path = normalize_path(
+            "/pendaftaran/peserta/:noka/tglDaftar/:tanggal/noUrut/:nomor/kdPoli/:poli",
+            &[
+                ("noka", Some(noka.to_string())),
+                ("tanggal", Some(tanggal.to_string())),
+                ("nomor", Some(nomor.to_string())),
+                ("poli", Some(poli.to_string())),
+            ],
+        )?;
+        self.client
+            .send(ServiceType::Pcare, RequestOptions::delete(path))
+            .await
     }
 }
